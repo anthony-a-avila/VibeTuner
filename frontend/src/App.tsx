@@ -1,8 +1,7 @@
 import { useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingQueryResults from "./imports/LandingQueryResults";
 import Collection from "./imports/Collection";
-
-type Page = "search" | "collection";
 
 export interface Track {
   id: string;
@@ -14,7 +13,6 @@ export interface Track {
 }
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>("search");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [collection, setCollection] = useState<Track[]>([]);
   
@@ -64,36 +62,46 @@ export default function App() {
   };
 
   return (
-    <div className="w-full h-screen overflow-auto">
-      {currentPage === "search" ? (
-        <LandingQueryResults 
-          onNavigateToCollection={() => setCurrentPage("collection")} 
-          isDarkMode={isDarkMode}
-          onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
-          onAddTrack={addTrack}
-          isTrackInCollection={isTrackInCollection}
-          queryText={queryText}
-          setQueryText={setQueryText}
-          numResults={numResults}
-          setNumResults={setNumResults}
-          numResultsInputValue={numResultsInputValue}
-          setNumResultsInputValue={setNumResultsInputValue}
-          obscurityEnabled={obscurityEnabled}
-          setObscurityEnabled={setObscurityEnabled}
-          searchResults={searchResults}
-          setSearchResults={setSearchResults}
-          onClearSearch={handleClearSearch}
-        />
-      ) : (
-        <Collection 
-          onNavigateToSearch={() => setCurrentPage("search")} 
-          isDarkMode={isDarkMode}
-          onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
-          tracks={collection}
-          onToggleFavorite={toggleFavorite}
-          onRemoveTrack={removeTrack}
-        />
-      )}
-    </div>
+    <BrowserRouter>
+      <div className="w-full h-screen overflow-auto">
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <LandingQueryResults 
+                isDarkMode={isDarkMode}
+                onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+                onAddTrack={addTrack}
+                isTrackInCollection={isTrackInCollection}
+                queryText={queryText}
+                setQueryText={setQueryText}
+                numResults={numResults}
+                setNumResults={setNumResults}
+                numResultsInputValue={numResultsInputValue}
+                setNumResultsInputValue={setNumResultsInputValue}
+                obscurityEnabled={obscurityEnabled}
+                setObscurityEnabled={setObscurityEnabled}
+                searchResults={searchResults}
+                setSearchResults={setSearchResults}
+                onClearSearch={handleClearSearch}
+              />
+            } 
+          />
+          <Route 
+            path="/collection" 
+            element={
+              <Collection 
+                isDarkMode={isDarkMode}
+                onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+                tracks={collection}
+                onToggleFavorite={toggleFavorite}
+                onRemoveTrack={removeTrack}
+              />
+            } 
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }

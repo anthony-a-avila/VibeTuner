@@ -2,6 +2,7 @@ import { ALBUM_COVERS } from "../assets/images";
 import { DarkModeToggle } from "../components/DarkModeToggle";
 import { Star, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,20 +35,19 @@ function BackToQueryPage({ onClick, isDarkMode }: { onClick: () => void; isDarkM
 }
 
 export default function Collection({ 
-  onNavigateToSearch,
   isDarkMode,
   onToggleDarkMode,
   tracks,
   onToggleFavorite,
   onRemoveTrack,
 }: { 
-  onNavigateToSearch: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   tracks: Track[];
   onToggleFavorite: (trackId: string) => void;
   onRemoveTrack: (trackId: string) => void;
 }) {
+  const navigate = useNavigate();
   const [trackToDelete, setTrackToDelete] = useState<string | null>(null);
 
   const handleDeleteConfirm = () => {
@@ -76,7 +76,7 @@ export default function Collection({
   return (
     <div className={`relative size-full transition-colors ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`} data-name="Collection">
       <DarkModeToggle isDarkMode={isDarkMode} onToggle={onToggleDarkMode} />
-      <BackToQueryPage onClick={onNavigateToSearch} isDarkMode={isDarkMode} />
+      <BackToQueryPage onClick={() => navigate('/')} isDarkMode={isDarkMode} />
       
       <AlertDialog open={trackToDelete !== null} onOpenChange={() => setTrackToDelete(null)}>
         <AlertDialogContent className={isDarkMode ? 'bg-gray-800 text-white border-gray-600' : ''}>

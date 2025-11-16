@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import svgIcons from "./svgIcons";
 import { BACKGROUND_LOGO, ALBUM_COVERS } from "../assets/images";
 import { FilterLabel } from "../components/FilterLabel";
@@ -169,7 +170,6 @@ const MOCK_TRACKS = [
 ];
 
 export default function LandingQueryResults({ 
-  onNavigateToCollection,
   isDarkMode,
   onToggleDarkMode,
   onAddTrack,
@@ -186,7 +186,6 @@ export default function LandingQueryResults({
   setSearchResults,
   onClearSearch,
 }: { 
-  onNavigateToCollection: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   onAddTrack: (track: Omit<Track, "isFavorited">) => void;
@@ -215,6 +214,7 @@ export default function LandingQueryResults({
   }>) => void;
   onClearSearch: () => void;
 }) {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
   const [shouldAnimate, setShouldAnimate] = React.useState(false);
   
@@ -359,7 +359,7 @@ export default function LandingQueryResults({
       data-name="Landing/Query/Results"
     >
       <DarkModeToggle isDarkMode={isDarkMode} onToggle={onToggleDarkMode} />
-      <Group onClick={onNavigateToCollection} isDarkMode={isDarkMode} />
+      <Group onClick={() => navigate('/collection')} isDarkMode={isDarkMode} />
       <div className="relative mx-auto w-full max-w-[1080px]">
         <p className={`absolute font-['Jost:Regular',sans-serif] font-normal h-[60px] leading-[normal] left-[540px] text-[40px] text-center top-[32px] translate-x-[-50%] w-[200px] transition-colors ${isDarkMode ? 'text-white' : 'text-black'}`}>VibeTuner</p>
         <p className={`absolute font-['Jost:Regular',sans-serif] font-normal h-[30px] leading-[normal] left-[540px] text-[20px] text-center top-[92px] translate-x-[-50%] w-[500px] transition-colors ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>Find new tracks using natural language query</p>
