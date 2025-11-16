@@ -1,4 +1,3 @@
-import { ALBUM_COVERS } from "../assets/images";
 import { DarkModeToggle } from "../components/DarkModeToggle";
 import { Star, Trash2 } from "lucide-react";
 import { useState } from "react";

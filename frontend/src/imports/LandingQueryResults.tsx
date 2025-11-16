@@ -1,11 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import svgIcons from "./svgIcons";
-import { BACKGROUND_LOGO, ALBUM_COVERS } from "../assets/images";
 import { FilterLabel } from "../components/FilterLabel";
 import type { QueryDTO, TrackDTO } from "../types/dtos";
 import { USE_BACKEND } from "../appMode";
 import axios from "axios";
+import { DarkModeToggle } from "../components/DarkModeToggle";
+import { Check } from "lucide-react";
+import type { Track } from "../App";
+import { Switch } from "../components/ui/switch";
 
 function LoadingDots({ isDarkMode }: { isDarkMode: boolean }) {
   return (
@@ -13,68 +15,6 @@ function LoadingDots({ isDarkMode }: { isDarkMode: boolean }) {
       <div className={`size-4 rounded-full animate-bounce transition-colors ${isDarkMode ? 'bg-white' : 'bg-black'}`} style={{ animationDelay: '0s', animationDuration: '0.6s' }} />
       <div className={`size-4 rounded-full animate-bounce transition-colors ${isDarkMode ? 'bg-white' : 'bg-black'}`} style={{ animationDelay: '0.2s', animationDuration: '0.6s' }} />
       <div className={`size-4 rounded-full animate-bounce transition-colors ${isDarkMode ? 'bg-white' : 'bg-black'}`} style={{ animationDelay: '0.4s', animationDuration: '0.6s' }} />
-    </div>
-  );
-}
-
-function Slider({ value, onChange }: { value: number; onChange: (value: number) => void }) {
-  const [isDragging, setIsDragging] = React.useState(false);
-  const sliderRef = React.useRef<HTMLDivElement>(null);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    updateValue(e.clientX);
-  };
-
-  const handleMouseMove = React.useCallback((e: MouseEvent) => {
-    if (isDragging) {
-      updateValue(e.clientX);
-    }
-  }, [isDragging]);
-
-  const handleMouseUp = React.useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  const updateValue = (clientX: number) => {
-    if (sliderRef.current) {
-      const rect = sliderRef.current.getBoundingClientRect();
-      const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-      const newValue = Math.round((x / rect.width) * 100);
-      onChange(newValue);
-    }
-  };
-
-  React.useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
-
-  const thumbPosition = (value / 100) * 200;
-
-  return (
-    <div 
-      ref={sliderRef}
-      className="absolute h-[17px] left-[765px] top-[420px] w-[200px] cursor-pointer" 
-      data-name="Slider"
-      onMouseDown={handleMouseDown}
-    >
-      <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 200 17">
-        <g id="Slider">
-          <rect fill="var(--fill-0, #4A89FF)" height="3" id="Rectangle 9" rx="1.5" width="200" y="14" />
-          <path 
-            d={`M${thumbPosition} 15L${thumbPosition - 6.495} 3.75H${thumbPosition + 6.495}L${thumbPosition} 15Z`}
-            fill="var(--fill-0, #4A89FF)" 
-            id="Polygon 1" 
-          />
-        </g>
-      </svg>
     </div>
   );
 }
@@ -139,35 +79,7 @@ function Group({ onClick, isDarkMode }: { onClick: () => void; isDarkMode: boole
   );
 }
 
-import { DarkModeToggle } from "../components/DarkModeToggle";
-import { Check } from "lucide-react";
-import type { Track } from "../App";
-import { Switch } from "../components/ui/switch";
 
-// Mock track data for the search results
-const MOCK_TRACKS = [
-  {
-    id: "track-1",
-    title: "Jazz (We've Got)",
-    artist: "A Tribe Called Quest",
-    duration: "2:45",
-    image: ALBUM_COVERS.cover1,
-  },
-  {
-    id: "track-2",
-    title: "Mista Bombastic",
-    artist: "Biggie Cheese",
-    duration: "3:21",
-    image: ALBUM_COVERS.cover2,
-  },
-  {
-    id: "track-3",
-    title: "I Used to be an Oakie from Mistogee",
-    artist: "Nosmo King",
-    duration: "5:23",
-    image: ALBUM_COVERS.cover3,
-  },
-];
 
 export default function LandingQueryResults({ 
   isDarkMode,
@@ -421,9 +333,6 @@ export default function LandingQueryResults({
           <p>&nbsp;</p>
         </div>
         <div className="absolute bg-[#d9d9d9] h-[80px] left-[-3702px] top-[750px] w-[900px]" />
-        <div className="absolute left-[-4749px] size-[2048px] top-[-822px]" data-name="anthonyavila_None_d2e35d4d-392e-46a7-b693-30e5c11219e6 1">
-          <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={BACKGROUND_LOGO} />
-        </div>
         
         {/* Loading state */}
         {isLoading && <LoadingDots isDarkMode={isDarkMode} />}

@@ -1,7 +1,7 @@
 export type QueryDTO {
   query: string;
   numResults: number;
-  obscurity: boolean;
+  obscurity: number;
 };
 
 export type TrackDTO {
