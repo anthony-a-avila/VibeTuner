@@ -1,5 +1,3 @@
-import React from "react";
-
 interface FilterLabelProps {
   text: string;
   className?: string;
