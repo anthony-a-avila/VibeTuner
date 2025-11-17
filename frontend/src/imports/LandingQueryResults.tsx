@@ -7,7 +7,6 @@ import axios from "axios";
 import { DarkModeToggle } from "../components/DarkModeToggle";
 import { Check } from "lucide-react";
 import type { Track } from "../App";
-// import { Switch } from "../components/ui/switch";
 import { LoadingDots } from "../components/LoadingDots";
 import { NavCollectionButton } from "../components/NavCollectionButton";
 import {
