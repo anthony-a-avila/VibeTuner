@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingQueryResults from "./imports/LandingQueryResults";
 import Collection from "./imports/Collection";
@@ -34,6 +34,15 @@ export default function App() {
       image: string;
     }>
   >([]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [isDarkMode]);
 
   const addTrack = (track: Omit<Track, "isFavorited">) => {
     setCollection((prev) => {
@@ -72,7 +81,9 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="w-full h-screen overflow-auto">
+      <div
+        className="w-full h-screen overflow-auto"
+      >
         <Routes>
           <Route
             path="/"

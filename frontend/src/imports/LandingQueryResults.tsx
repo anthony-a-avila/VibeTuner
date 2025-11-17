@@ -211,7 +211,9 @@ export default function LandingQueryResults({
 
   const minHeight =
     searchResults.length > 0
-      ? 628 + (searchResults.length - 1) * 120 + 100 + 150
+      ? `max(100vh, ${
+          628 + (searchResults.length - 1) * 120 + 100 + 150
+        }px)`
       : "100vh";
 
   return (
