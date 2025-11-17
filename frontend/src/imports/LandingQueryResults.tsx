@@ -215,7 +215,6 @@ export default function LandingQueryResults({
       ? 628 + (searchResults.length - 1) * 120 + 100 + 150
       : "100vh";
 
-  // ===== RETURN =====
   return (
     <div
       className={`relative w-full min-h-screen transition-colors ${
@@ -231,7 +230,7 @@ export default function LandingQueryResults({
       />
 
       <div className="relative mx-auto w-full max-w-[1080px]">
-        {/* Main title */}
+        {/* Title */}
         <p
           className={`absolute left-[540px] top-[32px] h-[60px] w-[200px] translate-x-[-50%] text-center font-['Jost:Regular',sans-serif] text-[40px] font-normal leading-[normal] transition-colors ${
             isDarkMode ? "text-white" : "text-black"
@@ -240,7 +239,7 @@ export default function LandingQueryResults({
           VibeTuner
         </p>
 
-        {/* Subtitle under title */}
+        {/* Subtitle */}
         <p
           className={`absolute left-[540px] top-[92px] h-[30px] w-[500px] translate-x-[-50%] text-center font-['Jost:Regular',sans-serif] text-[20px] font-normal leading-[normal] transition-colors ${
             isDarkMode ? "text-gray-300" : "text-black"
@@ -249,7 +248,7 @@ export default function LandingQueryResults({
           Find new tracks using natural language query
         </p>
 
-        {/* Main card */}
+        {/* Card background */}
         <div
           className={`absolute left-[90px] top-[178px] h-[400px] w-[900px] transition-colors ${
             isDarkMode ? "bg-gray-800" : "bg-[#f4f4f4]"
@@ -318,18 +317,16 @@ export default function LandingQueryResults({
           className="absolute left-[115px] top-[202px] h-[34px] w-[81px]"
         />
 
-        {/* === FILTER ROW: Number of results + Obscurity === */}
+        {/* === FILTER ROW (Number of results + Obscurity) === */}
         <div
-          className="absolute flex items-center gap-4"
+          className="absolute flex items-center gap-4 w-[850px]"
           style={{ left: 115, top: 422 }}
         >
-          {/* Number of results label (custom, mimics FilterLabel) */}
-          <div className="relative h-[34px] px-3 flex items-center">
-            <div className="absolute inset-0 bg-[#4a89ff] rounded-[10px]" />
-            <p className="relative z-10 font-['Jost:Regular',sans-serif] text-[14px] text-white whitespace-nowrap">
-              Number of results
-            </p>
-          </div>
+          {/* Number of results label (reuse FilterLabel so font matches Query) */}
+          <FilterLabel
+            text="Number of results"
+            className="relative h-[34px] w-[200px]"
+          />
 
           {/* Number of results input */}
           <input
@@ -346,15 +343,13 @@ export default function LandingQueryResults({
             }`}
           />
 
-          {/* Obscurity label */}
-          <div className="relative h-[34px] px-3 flex items-center">
-            <div className="absolute inset-0 bg-[#4a89ff] rounded-[10px]" />
-            <p className="relative z-10 font-['Jost:Regular',sans-serif] text-[14px] text-white whitespace-nowrap">
-              Obscurity
-            </p>
-          </div>
+          {/* Obscurity label (also FilterLabel) */}
+          <FilterLabel
+            text="Obscurity"
+            className="relative h-[34px] w-[115px]"
+          />
 
-          {/* Obscurity numeric input */}
+          {/* Obscurity numeric input – same size as Number of results */}
           <input
             type="text"
             value={obscurityInputValue}
@@ -362,29 +357,31 @@ export default function LandingQueryResults({
             onBlur={finalizeObscurityValue}
             onKeyDown={handleObscurityKeyDown}
             onFocus={(e) => e.target.select()}
-            className={`h-[34px] w-[60px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
+            className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
               isDarkMode
                 ? "border-gray-600 bg-gray-800 text-white"
                 : "border-black bg-white text-black"
             }`}
           />
 
-          {/* Obscurity slider */}
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={1}
-            value={obscurity}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setObscurity(value);
-              setObscurityInputValue(value.toString());
-            }}
-            className={`h-[4px] w-[140px] cursor-pointer rounded-full appearance-none ${
-              isDarkMode ? "bg-gray-700" : "bg-gray-200"
-            }`}
-          />
+          {/* Obscurity slider – fills remaining space so right edge matches textarea */}
+          <div className="flex-1">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={obscurity}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setObscurity(value);
+                setObscurityInputValue(value.toString());
+              }}
+              className={`h-[4px] w-full cursor-pointer rounded-full appearance-none ${
+                isDarkMode ? "bg-gray-700" : "bg-gray-200"
+              }`}
+            />
+          </div>
         </div>
         {/* === END FILTER ROW === */}
 
@@ -408,9 +405,10 @@ export default function LandingQueryResults({
           <p>&nbsp;</p>
         </div>
 
+        {/* Hidden offscreen block kept from original */}
         <div className="absolute left-[-3702px] top-[750px] h-[80px] w-[900px] bg-[#d9d9d9]" />
 
-        {/* Loading state - centered below the query box */}
+        {/* Loading state */}
         {isLoading && (
           <div
             className="absolute flex justify-center"
@@ -468,7 +466,7 @@ export default function LandingQueryResults({
                 >
                   <img
                     alt={track.title}
-                    className="absolute inset-0 size-full max-w-none rounded-[20px] object-cover object-50%-50% pointer-events-none"
+                    className="absolute inset-0 size-full max-w-none rounded-[20px] object-cover pointer-events-none"
                     src={track.image}
                   />
                 </div>
@@ -527,7 +525,7 @@ export default function LandingQueryResults({
                   {track.duration}
                 </p>
 
-                {/* Add button */}
+                {/* Add button circle */}
                 <div
                   className={`absolute left-[906px] size-[70px] cursor-pointer ${
                     shouldAnimate ? "animate-fade-in-up" : ""
@@ -553,7 +551,6 @@ export default function LandingQueryResults({
                       cx="35"
                       cy="35"
                       r="34.5"
-                      id="Ellipse 2"
                       className="transition-all"
                       fill={
                         isTrackInCollection(track.id)
@@ -562,26 +559,26 @@ export default function LandingQueryResults({
                           ? "#1f2937"
                           : "#FFFEFE"
                       }
-                      stroke="var(--stroke-0, #83AAFF)"
+                      stroke="#83AAFF"
                     />
                   </svg>
                 </div>
 
-                {/* Check mark or plus icon */}
+                {/* Check mark or plus */}
                 {isTrackInCollection(track.id) ? (
                   <div
                     className={`absolute left-[921px] pointer-events-none ${
                       shouldAnimate ? "animate-fade-in-up" : ""
                     }`}
-                  style={{
-                    top: `${topPosition + 30}px`,
-                    ...(shouldAnimate && {
-                      animationDelay: `${animationDelay}s`,
-                      opacity: 0,
-                      animationFillMode: "forwards",
-                    }),
-                    ...(!shouldAnimate && { opacity: 1 }),
-                  }}
+                    style={{
+                      top: `${topPosition + 30}px`,
+                      ...(shouldAnimate && {
+                        animationDelay: `${animationDelay}s`,
+                        opacity: 0,
+                        animationFillMode: "forwards",
+                      }),
+                      ...(!shouldAnimate && { opacity: 1 }),
+                    }}
                   >
                     <Check size={40} className="text-white" strokeWidth={3} />
                   </div>
