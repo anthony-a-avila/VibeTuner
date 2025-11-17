@@ -316,77 +316,73 @@ export default function LandingQueryResults({
           className="absolute left-[115px] top-[202px] h-[34px] w-[81px]"
         />
 
-        {/* === FILTER ROW (Number of results + Obscurity) === */}
+        {/* Number of results filter */}
         <div
-          className="absolute flex w-[850px] items-center gap-4"
+          className="absolute flex items-center gap-4"
           style={{ left: 115, top: 422 }}
         >
-          <div className="flex items-center gap-4">
-            {/* Number of results label */}
-            <FilterLabel
-              text="Number of results"
-              className="relative h-[34px] w-[200px]"
-            />
+          <FilterLabel
+            text="Number of results"
+            className="relative h-[34px] w-[200px]"
+          />
 
-            {/* Number of results input */}
+          <input
+            type="text"
+            value={numResultsInputValue}
+            onChange={handleNumResultsInputChange}
+            onBlur={finalizeNumResultsValue}
+            onKeyDown={handleNumResultsKeyDown}
+            onFocus={(e) => e.target.select()}
+            className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
+              isDarkMode
+                ? "border-gray-600 bg-gray-800 text-white"
+                : "border-black bg-white text-black"
+            }`}
+          />
+        </div>
+
+        {/* Obscurity filter – positioned independently so you can move it horizontally */}
+        <div
+          className="absolute flex items-center gap-4"
+          style={{ left: 621, top: 422 }}
+        >
+          <FilterLabel
+            text="Obscurity"
+            className="relative h-[34px] w-[115px]"
+          />
+
+          <input
+            type="text"
+            value={obscurityInputValue}
+            onChange={handleObscurityInputChange}
+            onBlur={finalizeObscurityValue}
+            onKeyDown={handleObscurityKeyDown}
+            onFocus={(e) => e.target.select()}
+            className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
+              isDarkMode
+                ? "border-gray-600 bg-gray-800 text-white"
+                : "border-black bg-white text-black"
+            }`}
+          />
+
+          <div className="w-[320px]">
             <input
-              type="text"
-              value={numResultsInputValue}
-              onChange={handleNumResultsInputChange}
-              onBlur={finalizeNumResultsValue}
-              onKeyDown={handleNumResultsKeyDown}
-              onFocus={(e) => e.target.select()}
-              className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
-                isDarkMode
-                  ? "border-gray-600 bg-gray-800 text-white"
-                  : "border-black bg-white text-black"
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={obscurity}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setObscurity(value);
+                setObscurityInputValue(value.toString());
+              }}
+              className={`h-[4px] w-full cursor-pointer rounded-full appearance-none ${
+                isDarkMode ? "bg-gray-700" : "bg-gray-200"
               }`}
             />
-          </div>
-
-          <div className="ml-auto flex w-[640px] items-center gap-4 justify-end">
-            {/* Obscurity label – aligned with right controls */}
-            <FilterLabel
-              text="Obscurity"
-              className="relative h-[34px] w-[115px]"
-            />
-
-            {/* Obscurity numeric input (same size as Number of results) */}
-            <input
-              type="text"
-              value={obscurityInputValue}
-              onChange={handleObscurityInputChange}
-              onBlur={finalizeObscurityValue}
-              onKeyDown={handleObscurityKeyDown}
-              onFocus={(e) => e.target.select()}
-              className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
-                isDarkMode
-                  ? "border-gray-600 bg-gray-800 text-white"
-                  : "border-black bg-white text-black"
-              }`}
-            />
-
-            {/* Obscurity slider – fixed width so entire group shifts right */}
-            <div className="w-[420px]">
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={obscurity}
-                onChange={(e) => {
-                  const value = Number(e.target.value);
-                  setObscurity(value);
-                  setObscurityInputValue(value.toString());
-                }}
-                className={`h-[4px] w-full cursor-pointer rounded-full appearance-none ${
-                  isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                }`}
-              />
-            </div>
           </div>
         </div>
-        {/* === END FILTER ROW === */}
 
         {/* Clear button */}
         <div
