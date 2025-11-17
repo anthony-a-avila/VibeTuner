@@ -7,7 +7,7 @@ import axios from "axios";
 import { DarkModeToggle } from "../components/DarkModeToggle";
 import { Check } from "lucide-react";
 import type { Track } from "../App";
-import { Switch } from "../components/ui/switch";
+// import { Switch } from "../components/ui/switch";
 import { LoadingDots } from "../components/LoadingDots";
 import { NavCollectionButton } from "../components/NavCollectionButton";
 import {
@@ -27,8 +27,10 @@ export default function LandingQueryResults({
   setNumResults,
   numResultsInputValue,
   setNumResultsInputValue,
-  obscurityEnabled,
-  setObscurityEnabled,
+  obscurity,
+  setObscurity,
+  obscurityInputValue,
+  setObscurityInputValue,
   searchResults,
   setSearchResults,
   onClearSearch,
@@ -43,8 +45,10 @@ export default function LandingQueryResults({
   setNumResults: (num: number) => void;
   numResultsInputValue: string;
   setNumResultsInputValue: (val: string) => void;
-  obscurityEnabled: boolean;
-  setObscurityEnabled: (enabled: boolean) => void;
+  obscurity: number;
+  setObscurity: (value: number) => void;
+  obscurityInputValue: string;
+  setObscurityInputValue: (val: string) => void;
   searchResults: Array<{
     id: string;
     title: string;
@@ -76,7 +80,7 @@ export default function LandingQueryResults({
       setNumResultsInputValue(numResults.toString());
       return;
     }
-    const val = parseInt(numResultsInputValue);
+    const val = parseInt(numResultsInputValue, 10);
     const clampedValue = Math.max(
       1,
       Math.min(10, isNaN(val) ? numResults : val)
@@ -90,6 +94,37 @@ export default function LandingQueryResults({
   ) => {
     if (e.key === "Enter") {
       finalizeNumResultsValue();
+      (e.target as HTMLInputElement).blur();
+    }
+  };
+
+  const handleObscurityInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setObscurityInputValue(e.target.value);
+  };
+
+  const finalizeObscurityValue = () => {
+    if (obscurityInputValue === "") {
+      setObscurityInputValue(obscurity.toString());
+      return;
+    }
+
+    const val = parseInt(obscurityInputValue, 10);
+    const clampedValue = Math.max(
+      0,
+      Math.min(100, isNaN(val) ? obscurity : val)
+    );
+
+    setObscurity(clampedValue);
+    setObscurityInputValue(clampedValue.toString());
+  };
+
+  const handleObscurityKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter") {
+      finalizeObscurityValue();
       (e.target as HTMLInputElement).blur();
     }
   };
@@ -143,8 +178,8 @@ export default function LandingQueryResults({
 
     const dto: QueryDTO = {
       query: queryText,
-      numResults: numResults,
-      obscurity: obscurityEnabled,
+      numResults,
+      obscurity,
     };
 
     try {
@@ -180,7 +215,7 @@ export default function LandingQueryResults({
       ? 628 + (searchResults.length - 1) * 120 + 100 + 150
       : "100vh";
 
-  // ===== RETURN (edited) =====
+  // ===== RETURN =====
   return (
     <div
       className={`relative w-full min-h-screen transition-colors ${
@@ -196,6 +231,7 @@ export default function LandingQueryResults({
       />
 
       <div className="relative mx-auto w-full max-w-[1080px]">
+        {/* Main title */}
         <p
           className={`absolute left-[540px] top-[32px] h-[60px] w-[200px] translate-x-[-50%] text-center font-['Jost:Regular',sans-serif] text-[40px] font-normal leading-[normal] transition-colors ${
             isDarkMode ? "text-white" : "text-black"
@@ -204,6 +240,7 @@ export default function LandingQueryResults({
           VibeTuner
         </p>
 
+        {/* Subtitle under title */}
         <p
           className={`absolute left-[540px] top-[92px] h-[30px] w-[500px] translate-x-[-50%] text-center font-['Jost:Regular',sans-serif] text-[20px] font-normal leading-[normal] transition-colors ${
             isDarkMode ? "text-gray-300" : "text-black"
@@ -212,6 +249,7 @@ export default function LandingQueryResults({
           Find new tracks using natural language query
         </p>
 
+        {/* Main card */}
         <div
           className={`absolute left-[90px] top-[178px] h-[400px] w-[900px] transition-colors ${
             isDarkMode ? "bg-gray-800" : "bg-[#f4f4f4]"
@@ -225,6 +263,7 @@ export default function LandingQueryResults({
           />
         </div>
 
+        {/* Search / Clear button backgrounds */}
         <div
           className={`absolute left-[713px] top-[487px] h-[44px] w-[252px] rounded-[10px] transition-colors ${
             isDarkMode ? "bg-gray-700" : "bg-black"
@@ -247,6 +286,7 @@ export default function LandingQueryResults({
           />
         </div>
 
+        {/* Query textarea */}
         <textarea
           value={queryText}
           onChange={(e) => setQueryText(e.target.value)}
@@ -272,7 +312,26 @@ export default function LandingQueryResults({
           * May return fewer results than specified
         </p>
 
-        <div className="absolute left-[333px] top-[422px] h-[34px] w-[68px]">
+        {/* Query label */}
+        <FilterLabel
+          text="Query"
+          className="absolute left-[115px] top-[202px] h-[34px] w-[81px]"
+        />
+
+        {/* === FILTER ROW: Number of results + Obscurity === */}
+        <div
+          className="absolute flex items-center gap-4"
+          style={{ left: 115, top: 422 }}
+        >
+          {/* Number of results label (custom, mimics FilterLabel) */}
+          <div className="relative h-[34px] px-3 flex items-center">
+            <div className="absolute inset-0 bg-[#4a89ff] rounded-[10px]" />
+            <p className="relative z-10 font-['Jost:Regular',sans-serif] text-[14px] text-white whitespace-nowrap">
+              Number of results
+            </p>
+          </div>
+
+          {/* Number of results input */}
           <input
             type="text"
             value={numResultsInputValue}
@@ -280,23 +339,56 @@ export default function LandingQueryResults({
             onBlur={finalizeNumResultsValue}
             onKeyDown={handleNumResultsKeyDown}
             onFocus={(e) => e.target.select()}
-            className={`absolute inset-0 h-full w-full border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
+            className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
               isDarkMode
                 ? "border-gray-600 bg-gray-800 text-white"
                 : "border-black bg-white text-black"
             }`}
           />
+
+          {/* Obscurity label */}
+          <div className="relative h-[34px] px-3 flex items-center">
+            <div className="absolute inset-0 bg-[#4a89ff] rounded-[10px]" />
+            <p className="relative z-10 font-['Jost:Regular',sans-serif] text-[14px] text-white whitespace-nowrap">
+              Obscurity
+            </p>
+          </div>
+
+          {/* Obscurity numeric input */}
+          <input
+            type="text"
+            value={obscurityInputValue}
+            onChange={handleObscurityInputChange}
+            onBlur={finalizeObscurityValue}
+            onKeyDown={handleObscurityKeyDown}
+            onFocus={(e) => e.target.select()}
+            className={`h-[34px] w-[60px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
+              isDarkMode
+                ? "border-gray-600 bg-gray-800 text-white"
+                : "border-black bg-white text-black"
+            }`}
+          />
+
+          {/* Obscurity slider */}
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={1}
+            value={obscurity}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setObscurity(value);
+              setObscurityInputValue(value.toString());
+            }}
+            className={`h-[4px] w-[140px] cursor-pointer rounded-full appearance-none ${
+              isDarkMode ? "bg-gray-700" : "bg-gray-200"
+            }`}
+          />
         </div>
+        {/* === END FILTER ROW === */}
 
-        <FilterLabel
-          text="Query"
-          className="absolute left-[115px] top-[202px] h-[34px] w-[81px]"
-        />
-        <FilterLabel
-          text="Number of results"
-          className="absolute left-[115px] top-[422px] h-[34px] w-[200px]"
-        />
-
+        {/* Clear button */}
         <div
           onClick={handleClear}
           className={`absolute left-[240.5px] top-[489px] h-[39px] w-[229px] translate-x-[-50%] cursor-pointer text-center font-['Jost:Regular',sans-serif] text-[24px] font-normal leading-[normal] transition-colors hover:opacity-70 ${
@@ -307,19 +399,7 @@ export default function LandingQueryResults({
           <p>&nbsp;</p>
         </div>
 
-        <FilterLabel
-          text="Obscurity"
-          className="absolute left-[736px] top-[420px] h-[34px] w-[115px]"
-        />
-
-        <div className="absolute left-[899px] top-[423px]">
-          <Switch
-            checked={obscurityEnabled}
-            onCheckedChange={setObscurityEnabled}
-            className="scale-150"
-          />
-        </div>
-
+        {/* Search button */}
         <div
           onClick={handleSearch}
           className="absolute left-[839px] top-[489px] h-[39px] w-[229px] translate-x-[-50%] cursor-pointer text-center font-['Jost:Regular',sans-serif] text-[24px] font-normal leading-[normal] text-white transition-opacity hover:opacity-80"
@@ -493,15 +573,15 @@ export default function LandingQueryResults({
                     className={`absolute left-[921px] pointer-events-none ${
                       shouldAnimate ? "animate-fade-in-up" : ""
                     }`}
-                    style={{
-                      top: `${topPosition + 30}px`,
-                      ...(shouldAnimate && {
-                        animationDelay: `${animationDelay}s`,
-                        opacity: 0,
-                        animationFillMode: "forwards",
-                      }),
-                      ...(!shouldAnimate && { opacity: 1 }),
-                    }}
+                  style={{
+                    top: `${topPosition + 30}px`,
+                    ...(shouldAnimate && {
+                      animationDelay: `${animationDelay}s`,
+                      opacity: 0,
+                      animationFillMode: "forwards",
+                    }),
+                    ...(!shouldAnimate && { opacity: 1 }),
+                  }}
                   >
                     <Check size={40} className="text-white" strokeWidth={3} />
                   </div>

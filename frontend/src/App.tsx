@@ -15,19 +15,25 @@ export interface Track {
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [collection, setCollection] = useState<Track[]>([]);
-  
+
   // Search page state
-  const [queryText, setQueryText] = useState('');
+  const [queryText, setQueryText] = useState("");
   const [numResults, setNumResults] = useState(3);
-  const [numResultsInputValue, setNumResultsInputValue] = useState('3');
-  const [obscurityEnabled, setObscurityEnabled] = useState(false);
-  const [searchResults, setSearchResults] = useState<Array<{
-    id: string;
-    title: string;
-    artist: string;
-    duration: string;
-    image: string;
-  }>>([]);
+  const [numResultsInputValue, setNumResultsInputValue] = useState("3");
+
+  // 0 = very popular, 100 = very obscure (tweak as you like)
+  const [obscurity, setObscurity] = useState(50);
+  const [obscurityInputValue, setObscurityInputValue] = useState("50");
+
+  const [searchResults, setSearchResults] = useState<
+    Array<{
+      id: string;
+      title: string;
+      artist: string;
+      duration: string;
+      image: string;
+    }>
+  >([]);
 
   const addTrack = (track: Omit<Track, "isFavorited">) => {
     setCollection((prev) => {
@@ -45,7 +51,9 @@ export default function App() {
 
   const toggleFavorite = (trackId: string) => {
     setCollection((prev) =>
-      prev.map((t) => (t.id === trackId ? { ...t, isFavorited: !t.isFavorited } : t))
+      prev.map((t) =>
+        t.id === trackId ? { ...t, isFavorited: !t.isFavorited } : t
+      )
     );
   };
 
@@ -54,10 +62,11 @@ export default function App() {
   };
 
   const handleClearSearch = () => {
-    setQueryText('');
+    setQueryText("");
     setNumResults(3);
-    setNumResultsInputValue('3');
-    setObscurityEnabled(false);
+    setNumResultsInputValue("3");
+    setObscurity(50);
+    setObscurityInputValue("50");
     setSearchResults([]);
   };
 
@@ -65,10 +74,10 @@ export default function App() {
     <BrowserRouter>
       <div className="w-full h-screen overflow-auto">
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
-              <LandingQueryResults 
+              <LandingQueryResults
                 isDarkMode={isDarkMode}
                 onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
                 onAddTrack={addTrack}
@@ -79,25 +88,27 @@ export default function App() {
                 setNumResults={setNumResults}
                 numResultsInputValue={numResultsInputValue}
                 setNumResultsInputValue={setNumResultsInputValue}
-                obscurityEnabled={obscurityEnabled}
-                setObscurityEnabled={setObscurityEnabled}
+                obscurity={obscurity}
+                setObscurity={setObscurity}
+                obscurityInputValue={obscurityInputValue}
+                setObscurityInputValue={setObscurityInputValue}
                 searchResults={searchResults}
                 setSearchResults={setSearchResults}
                 onClearSearch={handleClearSearch}
               />
-            } 
+            }
           />
-          <Route 
-            path="/collection" 
+          <Route
+            path="/collection"
             element={
-              <Collection 
+              <Collection
                 isDarkMode={isDarkMode}
                 onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
                 tracks={collection}
                 onToggleFavorite={toggleFavorite}
                 onRemoveTrack={removeTrack}
               />
-            } 
+            }
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
