@@ -209,7 +209,6 @@ export default function LandingQueryResults({
     }
   };
 
-  // Calculate minimum height based on number of results
   const minHeight =
     searchResults.length > 0
       ? 628 + (searchResults.length - 1) * 120 + 100 + 150
@@ -319,68 +318,72 @@ export default function LandingQueryResults({
 
         {/* === FILTER ROW (Number of results + Obscurity) === */}
         <div
-          className="absolute flex items-center gap-4 w-[850px]"
+          className="absolute flex w-[850px] items-center gap-4"
           style={{ left: 115, top: 422 }}
         >
-          {/* Number of results label (reuse FilterLabel so font matches Query) */}
-          <FilterLabel
-            text="Number of results"
-            className="relative h-[34px] w-[200px]"
-          />
+          <div className="flex items-center gap-4">
+            {/* Number of results label */}
+            <FilterLabel
+              text="Number of results"
+              className="relative h-[34px] w-[200px]"
+            />
 
-          {/* Number of results input */}
-          <input
-            type="text"
-            value={numResultsInputValue}
-            onChange={handleNumResultsInputChange}
-            onBlur={finalizeNumResultsValue}
-            onKeyDown={handleNumResultsKeyDown}
-            onFocus={(e) => e.target.select()}
-            className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
-              isDarkMode
-                ? "border-gray-600 bg-gray-800 text-white"
-                : "border-black bg-white text-black"
-            }`}
-          />
-
-          {/* Obscurity label (also FilterLabel) */}
-          <FilterLabel
-            text="Obscurity"
-            className="relative h-[34px] w-[115px]"
-          />
-
-          {/* Obscurity numeric input – same size as Number of results */}
-          <input
-            type="text"
-            value={obscurityInputValue}
-            onChange={handleObscurityInputChange}
-            onBlur={finalizeObscurityValue}
-            onKeyDown={handleObscurityKeyDown}
-            onFocus={(e) => e.target.select()}
-            className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
-              isDarkMode
-                ? "border-gray-600 bg-gray-800 text-white"
-                : "border-black bg-white text-black"
-            }`}
-          />
-
-          {/* Obscurity slider – fills remaining space so right edge matches textarea */}
-          <div className="flex-1">
+            {/* Number of results input */}
             <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={obscurity}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                setObscurity(value);
-                setObscurityInputValue(value.toString());
-              }}
-              className={`h-[4px] w-full cursor-pointer rounded-full appearance-none ${
-                isDarkMode ? "bg-gray-700" : "bg-gray-200"
+              type="text"
+              value={numResultsInputValue}
+              onChange={handleNumResultsInputChange}
+              onBlur={finalizeNumResultsValue}
+              onKeyDown={handleNumResultsKeyDown}
+              onFocus={(e) => e.target.select()}
+              className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
+                isDarkMode
+                  ? "border-gray-600 bg-gray-800 text-white"
+                  : "border-black bg-white text-black"
               }`}
             />
+          </div>
+
+          <div className="ml-auto flex w-[640px] items-center gap-4 justify-end">
+            {/* Obscurity label – aligned with right controls */}
+            <FilterLabel
+              text="Obscurity"
+              className="relative h-[34px] w-[115px]"
+            />
+
+            {/* Obscurity numeric input (same size as Number of results) */}
+            <input
+              type="text"
+              value={obscurityInputValue}
+              onChange={handleObscurityInputChange}
+              onBlur={finalizeObscurityValue}
+              onKeyDown={handleObscurityKeyDown}
+              onFocus={(e) => e.target.select()}
+              className={`h-[34px] w-[68px] border border-solid text-center font-[family-name:'Courier_New',Courier,monospace] text-[20px] transition-colors ${
+                isDarkMode
+                  ? "border-gray-600 bg-gray-800 text-white"
+                  : "border-black bg-white text-black"
+              }`}
+            />
+
+            {/* Obscurity slider – fixed width so entire group shifts right */}
+            <div className="w-[420px]">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={obscurity}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setObscurity(value);
+                  setObscurityInputValue(value.toString());
+                }}
+                className={`h-[4px] w-full cursor-pointer rounded-full appearance-none ${
+                  isDarkMode ? "bg-gray-700" : "bg-gray-200"
+                }`}
+              />
+            </div>
           </div>
         </div>
         {/* === END FILTER ROW === */}
@@ -405,7 +408,7 @@ export default function LandingQueryResults({
           <p>&nbsp;</p>
         </div>
 
-        {/* Hidden offscreen block kept from original */}
+        {/* Offscreen leftover element */}
         <div className="absolute left-[-3702px] top-[750px] h-[80px] w-[900px] bg-[#d9d9d9]" />
 
         {/* Loading state */}
