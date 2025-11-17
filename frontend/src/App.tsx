@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingQueryResults from "./imports/LandingQueryResults";
 import Collection from "./imports/Collection";
+import axios from "axios";
+import type { CollectionTrackDTO } from "./types/dtos";
 
 export interface Track {
   id: string;
@@ -44,26 +46,77 @@ export default function App() {
     }
   }, [isDarkMode]);
 
+  useEffect(() => {
+    // Load initial collection from backend
+    axios
+      .get<{ tracks: CollectionTrackDTO[] }>("/api/collection")
+      .then((response) => {
+        const mapped: Track[] = response.data.tracks.map((t) => ({
+          id: t.id,
+          title: t.title,
+          artist: t.artist,
+          duration: t.duration,
+          image: t.image,
+          isFavorited: t.isFavorited,
+        }));
+        setCollection(mapped);
+      })
+      .catch((error) => {
+        console.error("Failed to load collection", error);
+      });
+  }, []);
+
   const addTrack = (track: Omit<Track, "isFavorited">) => {
+    // Optimistically update UI
     setCollection((prev) => {
-      // Check if track already exists
       if (prev.some((t) => t.id === track.id)) {
         return prev;
       }
-      return [...prev, { ...track, isFavorited: false }];
+      const updated = [...prev, { ...track, isFavorited: false }];
+      return updated;
     });
+
+    axios
+      .post<{ track: CollectionTrackDTO }>("/api/collection", {
+        id: track.id,
+        title: track.title,
+        artist: track.artist,
+        duration: track.duration,
+        image: track.image,
+        isFavorited: false,
+      })
+      .catch((error) => {
+        console.error("Failed to save track to collection", error);
+      });
   };
 
   const removeTrack = (trackId: string) => {
     setCollection((prev) => prev.filter((t) => t.id !== trackId));
+
+    axios
+      .delete(`/api/collection/${encodeURIComponent(trackId)}`)
+      .catch((error) => {
+        console.error("Failed to delete track from collection", error);
+      });
   };
 
   const toggleFavorite = (trackId: string) => {
+    let nextValue = true;
     setCollection((prev) =>
-      prev.map((t) =>
-        t.id === trackId ? { ...t, isFavorited: !t.isFavorited } : t
-      )
+      prev.map((t) => {
+        if (t.id !== trackId) return t;
+        nextValue = !t.isFavorited;
+        return { ...t, isFavorited: nextValue };
+      })
     );
+
+    axios
+      .patch(`/api/collection/${encodeURIComponent(trackId)}/favorite`, {
+        isFavorited: nextValue,
+      })
+      .catch((error) => {
+        console.error("Failed to update favorite state", error);
+      });
   };
 
   const isTrackInCollection = (trackId: string) => {

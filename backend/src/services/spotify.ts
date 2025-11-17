@@ -36,6 +36,7 @@ export async function searchSpotify(q: string, dto: QueryDTO): Promise<TrackDTO[
     const distance = Math.abs(trackObscurity - desiredObscurity);
 
     const track: TrackDTO = {
+      id: item.id,
       title: item.name,
       artist: item.artists?.[0]?.name ?? "Unknown artist",
       duration: Math.floor(item.duration_ms / 1000),

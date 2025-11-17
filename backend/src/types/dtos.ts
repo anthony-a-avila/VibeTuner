@@ -5,6 +5,7 @@ export interface QueryDTO {
 }
 
 export interface TrackDTO {
+  id: string;         // Spotify track id
   title: string;
   artist: string;
   duration: number;   // seconds

@@ -150,10 +150,12 @@ export default function LandingQueryResults({
           const durationInSeconds = minutes * 60 + seconds;
 
           return {
+            id: `mock-${Date.now()}-${index}`,
             trackImg: ALBUM_IMAGES[imageIndex],
             title: TRACK_TITLES[titleIndex],
             artist: ARTIST_NAMES[artistIndex],
             duration: durationInSeconds,
+            popularity: Math.floor(Math.random() * 101),
           };
         }
       );
@@ -187,8 +189,8 @@ export default function LandingQueryResults({
         dto
       );
 
-      const results = response.data.tracks.map((track, index) => ({
-        id: `track-${Date.now()}-${index}`,
+      const results = response.data.tracks.map((track) => ({
+        id: track.id,
         title: track.title,
         artist: track.artist,
         duration: `${Math.floor(track.duration / 60)}:${(
@@ -424,6 +426,22 @@ export default function LandingQueryResults({
             const topPosition = 628 + index * 120;
             const animationDelay = index * 0.1;
 
+            const titleLength = track.title.length;
+            const isTwoLineTitle = titleLength > 40;
+
+            let titleFontSize = 24;
+            if (titleLength > 110) {
+              titleFontSize = 14;
+            } else if (titleLength > 90) {
+              titleFontSize = 16;
+            } else if (titleLength > 70) {
+              titleFontSize = 18;
+            } else if (titleLength > 50) {
+              titleFontSize = 20;
+            }
+            const titleTopOffset = isTwoLineTitle ? 8 : 13;
+            const artistTopOffset = isTwoLineTitle ? 56 : 50;
+
             return (
               <React.Fragment key={track.id}>
                 {/* Track card background */}
@@ -473,11 +491,15 @@ export default function LandingQueryResults({
 
                 {/* Track title */}
                 <p
-                  className={`absolute left-[204px] h-[33px] w-[600px] font-[family-name:'Courier_New',Courier,monospace] text-[24px] leading-[normal] not-italic transition-colors ${
+                  className={`absolute left-[204px] w-[600px] overflow-hidden font-[family-name:'Courier_New',Courier,monospace] leading-[normal] not-italic transition-colors ${
                     shouldAnimate ? "animate-fade-in-up" : ""
                   } ${isDarkMode ? "text-white" : "text-black"}`}
                   style={{
-                    top: `${topPosition + 13}px`,
+                    top: `${topPosition + titleTopOffset}px`,
+                    fontSize: `${titleFontSize}px`,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
                     ...(shouldAnimate && {
                       animationDelay: `${animationDelay}s`,
                       opacity: 0,
@@ -495,7 +517,7 @@ export default function LandingQueryResults({
                     shouldAnimate ? "animate-fade-in-up" : ""
                   } ${isDarkMode ? "text-gray-300" : "text-black"}`}
                   style={{
-                    top: `${topPosition + 50}px`,
+                    top: `${topPosition + artistTopOffset}px`,
                     ...(shouldAnimate && {
                       animationDelay: `${animationDelay}s`,
                       opacity: 0,
